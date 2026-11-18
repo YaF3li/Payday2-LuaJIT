@@ -1395,6 +1395,8 @@ function PlayerStandard:_start_action_steelsight(t, gadget_state)
 		return
 	end
 
+	local weapon_tweak_data = self._equipped_unit:base():weapon_tweak_data()
+
 	self:_break_intimidate_redirect(t)
 
 	self._steelsight_wanted = false
