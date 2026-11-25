@@ -2755,6 +2755,8 @@ function MenuComponentManager:close_friends_gui()
 end
 
 function MenuComponentManager:_contract_gui_class()
+	local gui_class = ContractBoxGui
+
 	if managers.crime_spree:is_active() then
 		return CrimeSpreeContractBoxGui
 	end
@@ -2763,7 +2765,7 @@ function MenuComponentManager:_contract_gui_class()
 		return SkirmishContractBoxGui
 	end
 
-	return ContractBoxGui
+	return gui_class
 end
 
 function MenuComponentManager:_create_contract_gui()

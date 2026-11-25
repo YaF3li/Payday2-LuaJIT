@@ -311,6 +311,18 @@ function InGameHeisterInteractionGui:_setup_layout()
 
 	self._scroll_panel:move(self.PADDING, self.PADDING + small_font_size)
 
+	local desc_macros = {}
+
+	if daily_challenge.contractor then
+		for _, safehouse_contractor in ipairs(tweak_data.safehouse.contractors) do
+			if safehouse_contractor.character == daily_challenge.contractor and safehouse_contractor.name_id then
+				desc_macros.name_id = managers.localization:text(safehouse_contractor.name_id)
+
+				break
+			end
+		end
+	end
+
 	local desc_panel = self._scroll_panel:panel({
 		layer = 1,
 		h = header_text_desc_height,
@@ -320,7 +332,7 @@ function InGameHeisterInteractionGui:_setup_layout()
 		layer = 1,
 		name = "desc_text",
 		wrap = true,
-		text = managers.localization:text(daily_info.desc_id),
+		text = managers.localization:text(daily_info.desc_id, desc_macros),
 		font = tweak_data.menu.pd2_small_font,
 		font_size = tweak_data.menu.pd2_small_font_size,
 		color = tweak_data.screen_colors.text
@@ -362,6 +374,16 @@ function InGameHeisterInteractionGui:_setup_layout()
 		end
 
 		macros.max_progress = tostring(max)
+	end
+
+	if daily_challenge.contractor then
+		for _, safehouse_contractor in ipairs(tweak_data.safehouse.contractors) do
+			if safehouse_contractor.character == daily_challenge.character and safehouse_contractor.name_id then
+				macros.character = managers.localization:text(contractor.name_id)
+
+				break
+			end
+		end
 	end
 
 	local obj_desc_text = obj_desc_panel:text({
@@ -428,7 +450,7 @@ function InGameHeisterInteractionGui:_setup_layout()
 	local first = true
 
 	for idx, reward in ipairs(daily_challenge.rewards) do
-		local reward_item = CustomSafehouseGuiRewardItem:new(self, reward_panel, idx, reward, daily_info.id, true)
+		local reward_item = CustomSafehouseGuiRewardItem:new(self, reward_panel, idx, daily_challenge, reward, daily_info.id, true)
 
 		reward_item._panel:move(self._scroll_panel:w() - self.PADDING * 2 - 128 * idx, 0)
 		table.insert(self._reward_buttons, reward_item)
@@ -441,6 +463,7 @@ function InGameHeisterInteractionGui:_setup_layout()
 	end
 
 	if daily_challenge.reward_id then
+		local reward_text_str = daily_challenge.reward_s or managers.localization:text(daily_challenge.reward_id)
 		local reward_text = reward_panel:text({
 			blend_mode = "add",
 			layer = 1,
@@ -448,7 +471,7 @@ function InGameHeisterInteractionGui:_setup_layout()
 			wrap = true,
 			font_size = small_font_size,
 			font = small_font,
-			text = managers.localization:text(daily_challenge.reward_id)
+			text = reward_text_str
 		})
 
 		reward_text:move(0, 20)

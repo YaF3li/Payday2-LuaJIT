@@ -2072,27 +2072,25 @@ end
 EconomyTweakData.market_link_search = "https://steamcommunity.com/market/search?appid=218620&q="
 
 function EconomyTweakData:create_weapon_skin_market_search_url(weapon_id, cosmetic_id)
-	local market_link = self.market_links.weapon_skins[cosmetic_id]
+	local market_link = self.market_links.weapon_skins and self.market_links.weapon_skins[cosmetic_id]
 
 	if market_link then
 		return EconomyTweakData.market_link_search .. market_link
 	end
 
 	local cosmetic_name = tweak_data.blackmarket.weapon_skins[cosmetic_id] and managers.localization:text(tweak_data.blackmarket.weapon_skins[cosmetic_id].name_id)
-	local weapon_name = managers.weapon_factory:get_weapon_name_by_weapon_id(weapon_id)
 
-	if cosmetic_name and weapon_name then
+	if cosmetic_name then
 		cosmetic_name = string.gsub(cosmetic_name, " ", "+")
-		weapon_name = string.gsub(weapon_name, " ", "+")
 
-		return string.gsub(EconomyTweakData.market_link_search .. cosmetic_name .. "+" .. weapon_name, "++", "+")
+		return string.gsub(EconomyTweakData.market_link_search .. cosmetic_name, "++", "+")
 	end
 
 	return nil
 end
 
 function EconomyTweakData:create_armor_skin_market_search_url(cosmetic_id)
-	local market_link = self.market_links.armor_skins[cosmetic_id]
+	local market_link = self.market_links.armor_skins and self.market_links.armor_skins[cosmetic_id]
 
 	if market_link then
 		return EconomyTweakData.market_link_search .. market_link

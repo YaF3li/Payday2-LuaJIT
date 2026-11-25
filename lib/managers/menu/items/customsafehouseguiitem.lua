@@ -276,13 +276,13 @@ function CustomSafehouseGuiButtonItem:init(panel, data, x, priority)
 
 	self._btn_data = data
 	self._callback = data.callback
-
-	local up_font_size = NOT_WIN_32 and RenderSettings.resolution.y < 720 and data.btn == "BTN_STICK_R" and 2 or 0
-
 	self._color = data.color or tweak_data.screen_colors.button_stage_3
 	self._selected_color = data.selected_color or tweak_data.screen_colors.button_stage_2
 	self._custom_data = data.custom
 	self._hidden = false
+
+	local up_font_size = NOT_WIN_32 and RenderSettings.resolution.y < 720 and data.btn == "BTN_STICK_R" and 2 or 0
+
 	self._panel = panel:panel({
 		x = x,
 		y = data.y or x + (priority - 1) * small_font_size,

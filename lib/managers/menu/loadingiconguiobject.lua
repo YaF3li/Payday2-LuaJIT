@@ -11,6 +11,7 @@ function LoadingIconGuiObject:init(panel, visible)
 end
 
 function LoadingIconGuiObject:show()
+	self._icon:stop()
 	self._icon:animate(function(o)
 		local dt
 

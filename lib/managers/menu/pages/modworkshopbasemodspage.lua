@@ -94,20 +94,32 @@ function ModWorkshopBaseModsPage:_create_right_side()
 		fixed_w = self._info_panel:w()
 	}))
 
-	local function action_button(name, func)
+	local function action_button(name, button, func)
+		local text = managers.localization:to_upper_text("menu_mws_" .. name)
+
+		if not managers.menu:is_pc_controller() then
+			local prefix = managers.localization:get_default_macro(button) or ""
+
+			text = prefix .. text
+		end
+
 		self["_" .. name .. "_btn"] = self._buttons:add_item(TextCompositeButton:new(self._buttons, {
-			text = managers.localization:to_upper_text("menu_mws_" .. name),
-			trigger_func = func
+			text_align = "right",
+			text = text,
+			trigger_func = func,
+			text_config = {
+				font = tweak_data.menu.pd2_small_font
+			}
 		}, {
 			visible = false,
 			w = self._buttons:row_w()
 		}))
 	end
 
-	action_button("install", callback(self, self, "install_current_mod"))
-	action_button("abort_installation", callback(self, self, "abort_installation_current_mod"))
-	action_button("uninstall", callback(self, self, "uninstall_current_mod"))
-	action_button("visit_mod_page", callback(self, self, "visit_current_mod_page"))
+	action_button("install", "BTN_A", callback(self, self, "install_current_mod"))
+	action_button("abort_installation", "BTN_A", callback(self, self, "abort_installation_current_mod"))
+	action_button("uninstall", "BTN_A", callback(self, self, "uninstall_current_mod"))
+	action_button("visit_mod_page", "BTN_STICK_R", callback(self, self, "visit_current_mod_page"))
 
 	self._pagination_holder = MultichoiceGuiObject:new(self._page_panel:parent(), {
 		use_change_profile_controls = true,
@@ -118,6 +130,10 @@ function ModWorkshopBaseModsPage:_create_right_side()
 			}
 		},
 		on_change = function(index)
+			if self._page == index then
+				return
+			end
+
 			self._page = index
 
 			self:search_mods(true)
@@ -174,9 +190,35 @@ function ModWorkshopBaseModsPage:input_focus()
 end
 
 function ModWorkshopBaseModsPage:confirm_pressed()
-	if self._mods_grid:selected_item() and self._mods_grid:selected_item()._item then
-		-- Nothing
+	if self._showing_dialog then
+		return
 	end
+
+	if self._searchbox and self._searchbox:input_focus() and managers.menu:is_pc_controller() then
+		self._searchbox:disconnect_search_input()
+
+		return true
+	end
+
+	if self._mod and self._confirm_mapping then
+		self._confirm_mapping()
+
+		return true
+	end
+end
+
+function ModWorkshopBaseModsPage:special_btn_pressed(button)
+	if self._showing_dialog then
+		return
+	end
+
+	if button == Idstring("menu_preview_item") then
+		self:visit_current_mod_page()
+
+		return true
+	end
+
+	return ModWorkshopBaseModsPage.super.special_btn_pressed(self, button)
 end
 
 function ModWorkshopBaseModsPage:allow_input()
@@ -266,10 +308,16 @@ function ModWorkshopBaseModsPage:update_right_side()
 	if mod then
 		if mod:is_installed() then
 			self._uninstall_btn:show()
+
+			self._confirm_mapping = self._uninstall_btn._trigger_func
 		elseif download_state == ModWorkshopManager.DOWNLOAD_NONE then
 			self._install_btn:show()
+
+			self._confirm_mapping = self._install_btn._trigger_func
 		elseif download_state == ModWorkshopManager.DOWNLOAD_DOWNLOADING or download_state == ModWorkshopManager.DOWNLOAD_QUEUED then
 			self._abort_installation_btn:show()
+
+			self._confirm_mapping = self._abort_installation_btn._trigger_func
 		end
 
 		self._visit_mod_page_btn:show()
@@ -359,5 +407,7 @@ function ModWorkshopBaseModsPage:check_current_mod_updates()
 end
 
 function ModWorkshopBaseModsPage:visit_current_mod_page()
-	self._mod:visit_page()
+	if self._mod then
+		self._mod:visit_page()
+	end
 end

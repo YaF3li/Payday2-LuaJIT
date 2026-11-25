@@ -1971,13 +1971,17 @@ function HUDStageEndScreen:safehouse_currency_init(t, dt)
 	local was_safehouse_raid = managers.job:current_job_id() == "chill_combat"
 
 	if was_safehouse_raid and is_success then
+		local difficulty_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)
+		local coins = tweak_data.safehouse.rewards.raid
+
+		print("[SAFEHOUSERAIDREWARD] HUDStageEndScreen coins, difficulty_index", coins, difficulty_index)
 		table.insert(trophies, {
 			"menu_es_safehouse_raid",
-			tweak_data.safehouse.rewards.raid,
+			coins,
 			tweak_data.screen_colors.important_1
 		})
 
-		exp_income = exp_income - tweak_data.safehouse.rewards.raid
+		exp_income = exp_income - coins
 	end
 
 	if total_income <= 0 then

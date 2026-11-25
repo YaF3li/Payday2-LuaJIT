@@ -91,7 +91,10 @@ function VehicleDrivingExt:init(unit)
 	end
 
 	self._unit:set_body_collision_callback(callback(self, self, "collision_callback"))
-	self:set_tweak_data(tweak_data.vehicle[self.tweak_data])
+
+	local vehicle_tweak_data = tweak_data.vehicle[self.tweak_data]
+
+	self:set_tweak_data(vehicle_tweak_data)
 
 	if self._is_server and self._pos_rsrv_radius then
 		local groupai_state = managers.groupai:state()
@@ -561,17 +564,15 @@ function VehicleDrivingExt:sync_give_vehicle_loot_to_player(carry_id, multiplier
 		return
 	end
 
-	if not self._is_server then
-		local peer = managers.network:get_peer_safe(peer_id)
+	local peer = managers.network:get_peer_safe(peer_id)
 
-		if not peer then
-			Application:error("[VehicleDrivingExt] sync_give_vehicle_loot_to_player() - invalid peer!", peer_id)
+	if not peer then
+		Application:error("[VehicleDrivingExt] sync_give_vehicle_loot_to_player() - invalid peer!", peer_id)
 
-			return
-		end
+		return
 	end
 
-	if peer_id == managers.network:get_local_peer_safe():id() then
+	if peer_id == managers.network:get_local_peer_id_safe() then
 		managers.player:set_carry(carry_id, multiplier, true, false, 1)
 	end
 

@@ -2701,7 +2701,11 @@ function NewLoadoutItem:init(panel, columns, rows, x, y, params)
 		font_size = font_size
 	})
 
+	local is_forced_data = managers.job:is_forced()
+
 	if params then
+		print("[MissionBriefingGui] params", inspect(params))
+
 		if params.secondary and managers.player:has_category_upgrade("player", "second_deployable") then
 			local info_text = " / "
 
@@ -2735,7 +2739,8 @@ function NewLoadoutItem:init(panel, columns, rows, x, y, params)
 				self._item_image1:set_size(sw, sh)
 				self._item_image1:set_center(half_w / 2, half_h)
 
-				if managers.job:is_forced() then
+				if is_forced_data and is_forced_data[params.loadout_item_type] then
+					print("[NewLoadoutItem:init] Set color black on second deployable")
 					self._item_image1:set_color(Color.black)
 				end
 			end
@@ -2756,7 +2761,8 @@ function NewLoadoutItem:init(panel, columns, rows, x, y, params)
 				self._item_image2:set_size(sw, sh)
 				self._item_image2:set_center(half_w / 2 * 3, half_h)
 
-				if managers.job:is_forced() then
+				if is_forced_data and is_forced_data[params.loadout_item_type] then
+					print("[NewLoadoutItem:init] Set color black on secondary item")
 					self._item_image2:set_color(Color.black)
 				end
 			end
@@ -2794,7 +2800,7 @@ function NewLoadoutItem:init(panel, columns, rows, x, y, params)
 				self._item_image:set_center(self._item_panel:w() * 0.5, self._item_panel:h() * 0.5)
 			end
 
-			if managers.job:is_forced() then
+			if is_forced_data and is_forced_data[params.loadout_item_type] then
 				self._item_image:set_color(Color.black)
 
 				if akimbo_bitmap then
@@ -2817,7 +2823,7 @@ function NewLoadoutItem:init(panel, columns, rows, x, y, params)
 				self._item_image1:set_size(sw * 0.5, sh * 0.5)
 				self._item_image1:set_center(self._item_panel:w() * 0.5, self._item_panel:h() * 0.35)
 
-				if managers.job:is_forced() then
+				if is_forced_data and is_forced_data[params.loadout_item_type] then
 					self._item_image1:set_color(Color.black)
 				end
 			end
@@ -2837,7 +2843,7 @@ function NewLoadoutItem:init(panel, columns, rows, x, y, params)
 				self._item_image2:set_size(sw * 0.5, sh * 0.5)
 				self._item_image2:set_center(self._item_panel:w() * 0.5, self._item_panel:h() * 0.65)
 
-				if managers.job:is_forced() then
+				if is_forced_data and is_forced_data[params.loadout_item_type] then
 					self._item_image2:set_color(Color.black)
 				end
 			end
@@ -2906,9 +2912,11 @@ function NewLoadoutItem:init(panel, columns, rows, x, y, params)
 		end
 
 		self._params = params
+	else
+		Application:warn("[NewLoadoutItem:init] No params", params, self)
 	end
 
-	if managers.job:is_forced() then
+	if is_forced_data and self._params and is_forced_data[self._params.loadout_item_type] then
 		local lock = self._item_panel:bitmap({
 			h = 32,
 			layer = 2,
@@ -2919,6 +2927,8 @@ function NewLoadoutItem:init(panel, columns, rows, x, y, params)
 		})
 
 		lock:set_center(self._item_panel:center_x(), self._item_panel:center_y())
+	else
+		print("[NewLoadoutItem:init] Is not forced", self._params and self._params.loadout_item_type)
 	end
 
 	self:deselect_item()
@@ -2975,6 +2985,13 @@ NewLoadoutTab = NewLoadoutTab or class(MissionBriefingTabItem)
 NewLoadoutTab.columns = 3
 NewLoadoutTab.rows = 2
 
+local NODE_IDX_1_PRIMARY = 1
+local NODE_IDX_2_SECONDARY = 2
+local NODE_IDX_3_MELEE = 3
+local NODE_IDX_4_GRENADE = 4
+local NODE_IDX_5_ARMOR = 5
+local NODE_IDX_6_DEPLOYABLE = 6
+
 function NewLoadoutTab:init(panel, text, i, menu_component_data)
 	self._my_menu_component_data = menu_component_data
 
@@ -2983,6 +3000,7 @@ function NewLoadoutTab:init(panel, text, i, menu_component_data)
 	self._panel:grow(0, -5)
 
 	self._index = i
+	self._items = {}
 
 	local player_loadout_data = managers.blackmarket:player_loadout_data()
 	local items = {
@@ -2993,16 +3011,24 @@ function NewLoadoutTab:init(panel, text, i, menu_component_data)
 		player_loadout_data.armor,
 		player_loadout_data.deployable
 	}
-	local selected = self._my_menu_component_data.selected or 1
-
-	self._items = {}
-
+	local loadout_item_types = {
+		"primary",
+		"secondary",
+		"melee",
+		"throwable",
+		"armor",
+		"deployable"
+	}
 	local columns = NewLoadoutTab.columns
 	local rows = NewLoadoutTab.rows
+	local selected = self._my_menu_component_data.selected or 1
+	local index = 1
 
 	for row = 1, rows do
 		for column = 1, columns do
-			local item = items[(row - 1) * columns + column]
+			local item = items[index]
+
+			item.loadout_item_type = loadout_item_types[index]
 
 			if item then
 				local new_item = NewLoadoutItem:new(self._panel, columns, rows, column, row, item)
@@ -3016,6 +3042,8 @@ function NewLoadoutTab:init(panel, text, i, menu_component_data)
 					self._my_menu_component_data.selected = selected
 				end
 			end
+
+			index = index + 1
 		end
 	end
 end
@@ -3069,10 +3097,6 @@ function NewLoadoutTab:mouse_pressed(button, x, y)
 end
 
 function NewLoadoutTab:confirm_pressed()
-	if managers.job:is_forced() then
-		return
-	end
-
 	if self._item_selected then
 		self:open_node(self._item_selected)
 
@@ -3531,10 +3555,13 @@ function NewLoadoutTab:create_armor_loadout()
 end
 
 function NewLoadoutTab:open_node(node)
+	local success = false
+	local is_forced_data = managers.job:is_forced()
+
 	self._my_menu_component_data.changing_loadout = nil
 	self._my_menu_component_data.current_slot = nil
 
-	if node == 1 then
+	if node == NODE_IDX_1_PRIMARY and (not is_forced_data or not is_forced_data.primary) then
 		self._my_menu_component_data.changing_loadout = "primary"
 		self._my_menu_component_data.current_slot = managers.blackmarket:equipped_weapon_slot("primaries")
 
@@ -3542,7 +3569,9 @@ function NewLoadoutTab:open_node(node)
 		managers.menu:open_node("loadout", {
 			self:create_primaries_loadout()
 		})
-	elseif node == 2 then
+
+		success = true
+	elseif node == NODE_IDX_2_SECONDARY and (not is_forced_data or not is_forced_data.secondary) then
 		self._my_menu_component_data.changing_loadout = "secondary"
 		self._my_menu_component_data.current_slot = managers.blackmarket:equipped_weapon_slot("secondaries")
 
@@ -3550,29 +3579,41 @@ function NewLoadoutTab:open_node(node)
 		managers.menu:open_node("loadout", {
 			self:create_secondaries_loadout()
 		})
-	elseif node == 3 then
+
+		success = true
+	elseif node == NODE_IDX_3_MELEE and (not is_forced_data or not is_forced_data.melee) then
 		managers.menu_component:post_event("menu_enter")
 		managers.menu:open_node("loadout", {
 			self:create_melee_weapon_loadout()
 		})
-	elseif node == 4 then
+
+		success = true
+	elseif node == NODE_IDX_4_GRENADE and (not is_forced_data or not is_forced_data.throwable) then
 		managers.menu_component:post_event("menu_enter")
 		managers.menu:open_node("loadout", {
 			self:create_grenade_loadout()
 		})
-	elseif node == 5 then
+
+		success = true
+	elseif node == NODE_IDX_5_ARMOR and (not is_forced_data or not is_forced_data.armor) then
 		managers.menu_component:post_event("menu_enter")
 		managers.menu:open_node("loadout", {
 			self:create_armor_loadout()
 		})
-	elseif node == 6 then
+
+		success = true
+	elseif node == NODE_IDX_6_DEPLOYABLE and (not is_forced_data or not is_forced_data.deployable) then
 		managers.menu_component:post_event("menu_enter")
 		managers.menu:open_node("loadout", {
 			self:create_deployable_loadout()
 		})
+
+		success = true
 	end
 
-	managers.menu_component:on_ready_pressed_mission_briefing_gui(false)
+	if success then
+		managers.menu_component:on_ready_pressed_mission_briefing_gui(false)
+	end
 end
 
 MutatorsItem = MutatorsItem or class(MissionBriefingTabItem)

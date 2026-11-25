@@ -1017,9 +1017,7 @@ function BlackMarketTweakData:_init_weapon_skins(tweak_data)
 		"wpn_fps_pis_deagle_body_standard",
 		"wpn_fps_pis_deagle_m_standard",
 		"wpn_fps_pis_deagle_b_legend",
-		"wpn_fps_pis_deagle_g_ergo",
-		"wpn_fps_pis_deagle_o_standard_front",
-		"wpn_fps_pis_deagle_o_standard_rear"
+		"wpn_fps_pis_deagle_g_ergo"
 	}
 	self.weapon_skins.deagle_bling.special_blueprint = {
 		deagle = {
@@ -3375,6 +3373,13 @@ function BlackMarketTweakData:_init_weapon_skins(tweak_data)
 				uv_offset_rot = Vector3(0.05682, 0.909473, 0.28921),
 				sticker = Idstring("units/payday2_cash/safes/dallas/sticker/sticker_texaslonghorn_df"),
 				uv_scale = Vector3(3.02781, 4.02898, 1)
+			}
+		},
+		wpn_fps_ass_m14_body_ruger = {
+			[Idstring("mtr_ruger"):key()] = {
+				sticker = Idstring("units/payday2_cash/safes/dallas/sticker/sticker_texaslonghorn_df"),
+				uv_offset_rot = Vector3(-0.229212, 1.0011, 0.244255),
+				uv_scale = Vector3(2.74937, 2.99971, 1)
 			}
 		},
 		wpn_fps_ass_m14_body_upper = {

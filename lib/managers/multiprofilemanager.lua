@@ -16,16 +16,21 @@ function MultiProfileManager:save_current()
 	print("[MultiProfileManager:save_current] current profile:", self._global._current_profile)
 
 	local profile = self:current_profile() or {}
+	local forced = managers.job:is_forced()
 	local blm = managers.blackmarket
 	local skt = managers.skilltree._global
 
-	profile.primary = blm:equipped_weapon_slot("primaries")
-	profile.secondary = blm:equipped_weapon_slot("secondaries")
-	profile.melee = blm:equipped_melee_weapon()
-	profile.throwable = blm:equipped_grenade()
-	profile.deployable = blm:equipped_deployable()
-	profile.deployable_secondary = blm:equipped_deployable(2)
-	profile.armor = blm:equipped_armor()
+	local function is_forced_id(cat)
+		return forced and forced[cat] and profile[cat] or false
+	end
+
+	profile.primary = is_forced_id("primary") or blm:equipped_weapon_slot("primaries")
+	profile.secondary = is_forced_id("secondary") or blm:equipped_weapon_slot("secondaries")
+	profile.melee = is_forced_id("melee") or blm:equipped_melee_weapon()
+	profile.throwable = is_forced_id("throwable") or blm:equipped_grenade()
+	profile.deployable = is_forced_id("deployable") or blm:equipped_deployable()
+	profile.deployable_secondary = is_forced_id("deployable_secondary") or blm:equipped_deployable(2)
+	profile.armor = is_forced_id("armor") or blm:equipped_armor()
 	profile.armor_skin = blm:equipped_armor_skin()
 	profile.player_style = blm:equipped_player_style()
 	profile.suit_variations = blm:get_suit_variations()
@@ -64,6 +69,7 @@ function MultiProfileManager:load_current()
 	Global.block_update_outfit_information = true
 	Global.block_publish_equipped_to_steam = true
 
+	local forced = managers.job:is_forced()
 	local profile = self:current_profile()
 	local blm = managers.blackmarket
 	local skt = managers.skilltree
@@ -78,19 +84,39 @@ function MultiProfileManager:load_current()
 		end
 	end
 
-	blm:equip_weapon("primaries", profile.primary)
-	blm:equip_weapon("secondaries", profile.secondary)
-	blm:equip_melee_weapon(profile.melee)
-	blm:equip_grenade(profile.throwable)
+	if not forced or not forced.primary then
+		blm:equip_weapon("primaries", profile.primary)
+	end
+
+	if not forced or not forced.secondary then
+		blm:equip_weapon("secondaries", profile.secondary)
+	end
+
+	if not forced or not forced.melee then
+		blm:equip_melee_weapon(profile.melee)
+	end
+
+	local throwable_id = forced and forced.throwable or profile.throwable
+
+	blm:equip_grenade(throwable_id)
+
+	local deployable_id = forced and forced.deployable or profile.deployable
+
 	blm:equip_deployable({
 		target_slot = 1,
-		name = profile.deployable
+		name = deployable_id
 	})
+
+	local deployable_secondary_id = forced and forced.deployable_secondary or profile.deployable_secondary
+
 	blm:equip_deployable({
 		target_slot = 2,
-		name = profile.deployable_secondary
+		name = deployable_secondary_id
 	})
-	blm:equip_armor(profile.armor)
+
+	local armor_id = forced and forced.armor or profile.armor
+
+	blm:equip_armor(armor_id)
 	blm:set_equipped_armor_skin(profile.armor_skin)
 	blm:set_equipped_player_style(profile.player_style or blm:get_default_player_style())
 	blm:set_suit_variations(profile.suit_variations or {})

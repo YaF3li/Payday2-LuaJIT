@@ -71,7 +71,13 @@ end
 function ModWorkshopManager:reload_installed_mods_map()
 	self._installed_mods_map = {}
 
-	for _, mod in pairs(ModWorkshop:installed_mods()) do
+	local installed_mods = ModWorkshop:installed_mods()
+
+	if not installed_mods then
+		return
+	end
+
+	for _, mod in pairs(installed_mods) do
 		self._installed_mods_map[mod.id] = mod
 	end
 end

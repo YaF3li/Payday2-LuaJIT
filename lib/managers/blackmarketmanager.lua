@@ -3886,6 +3886,8 @@ function BlackMarketManager:player_loadout_data(show_all_icons)
 	if grenade and grenade_amount > 0 then
 		grenade_texture = self:get_throwable_icon(grenade)
 		grenade_string = managers.localization:text(tweak_data.blackmarket.projectiles[grenade].name_id)
+	else
+		grenade_texture = "guis/textures/pd2/add_icon"
 	end
 
 	if armor then
@@ -5464,8 +5466,10 @@ function BlackMarketManager:is_previewing_legendary_skin(mod_type)
 
 	if not locked_parts then
 		return false
-	elseif type(locked_parts) == "boolean" then
-		return true
+	end
+
+	if type(locked_parts.locked) == "boolean" then
+		return locked_parts.locked
 	end
 
 	if mod_type and locked_parts.locked and locked_parts.locked[mod_type] then
@@ -8120,7 +8124,7 @@ function BlackMarketManager:tradable_add_item(instance_id, category, entry, qual
 		local item = self._global.inventory_tradable[instance_id]
 
 		if item.category ~= category or item.entry ~= entry then
-			Application:error("[BlackMarketManager:tradable_add_item] Item is wrong!")
+			Application:error("[BlackMarketManager:tradable_add_item] Item is wrong!", item.category, category, item.entry, entry)
 		end
 
 		item.amount = amount
@@ -10397,7 +10401,7 @@ function BlackMarketManager:forced_character()
 	if managers.network and managers.network:session() then
 		local level_data = tweak_data.levels[managers.job:current_level_id()]
 
-		if level_data and level_data.force_equipment then
+		if level_data and level_data.force_equipment and level_data.force_equipment.character then
 			local peer = managers.network:session():local_peer()
 
 			if peer and peer:character() ~= level_data.force_equipment.character then

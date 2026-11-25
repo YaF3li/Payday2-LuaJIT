@@ -696,7 +696,12 @@ function MissionEndState:generate_safehouse_statistics()
 	local exp_income = total_income
 	local trophies_income = 0
 	local daily_income = 0
-	local raid_income = was_safehouse_raid and game_state_machine:current_state():name() == "victoryscreen" and tweak_data.safehouse.rewards.raid or 0
+	local difficulty_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)
+	local coins = tweak_data.safehouse.rewards.raid
+
+	print("[SAFEHOUSERAIDREWARD] MissionEndState coins, difficulty_index", coins, difficulty_index)
+
+	local raid_income = was_safehouse_raid and game_state_machine:current_state():name() == "victoryscreen" and coins or 0
 
 	for idx, trophy_data in ipairs(self._trophies_list) do
 		if trophy_data.type == "trophy" then

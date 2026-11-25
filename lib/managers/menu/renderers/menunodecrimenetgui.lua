@@ -3643,10 +3643,6 @@ function MenuNodeCrimenetChallengeGui:set_contact_info(id, name, files, override
 			local unavailable = not challenge.completed
 			local next_x
 
-			if challenge.reward_type == "single" then
-				-- Nothing
-			end
-
 			for i, reward in ipairs(challenge.rewards) do
 				local panel = files_menu:panel({
 					name = tostring(i),
@@ -3694,12 +3690,13 @@ function MenuNodeCrimenetChallengeGui:set_contact_info(id, name, files, override
 
 			make_fine_text(reward_title_text)
 
+			local reward_text_str = challenge.reward_s or managers.localization:text(challenge.reward_id)
 			local reward_text = self._info_panel:text({
 				blend_mode = "add",
 				name = "rewards_text",
 				word_wrap = true,
 				wrap = true,
-				text = challenge.reward_s or managers.localization:text(challenge.reward_id),
+				text = reward_text_str,
 				font = tweak_data.menu.pd2_small_font,
 				font_size = tweak_data.menu.pd2_small_font_size,
 				color = tweak_data.screen_colors.text
@@ -4880,8 +4877,6 @@ function MenuNodeOpenContainerGui:setup(half_fade)
 
 		if not managers.blackmarket:have_inventory_tradable_item("drills", data.drill) then
 			drill_bitmap_panel:set_alpha(0.5)
-
-			local blend_mode = "add"
 		end
 
 		self:request_texture(bitmap_texture, drill_bitmap_panel, true, blend_mode)

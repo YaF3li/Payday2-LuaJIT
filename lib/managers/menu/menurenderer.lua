@@ -354,6 +354,8 @@ end
 
 function MenuRenderer:input_focus()
 	if self:active_node_gui() and (self:active_node_gui().name == "crimenet_contract_crime_spree_join" or self:active_node_gui().name == "crimenet_crime_spree_contract_host" or self:active_node_gui().name == "crimenet_crime_spree_contract_singleplayer") then
+		print("[CrimeSpreeHack] ...in MenuRenderer:input_focus -->" .. self:active_node_gui().name)
+
 		return false
 	end
 

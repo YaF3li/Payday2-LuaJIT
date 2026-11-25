@@ -136,6 +136,10 @@ function FeatureManager:can_announce(feature_id)
 		return false
 	end
 
+	if type(announcement) == "boolean" and announcement == true then
+		return true
+	end
+
 	if type(announcement) ~= "number" then
 		self._global.announcements[feature_id] = 0
 
@@ -164,14 +168,20 @@ function FeatureManager:announce_feature(feature_id)
 		return
 	end
 
-	if type(announcement) ~= "number" then
-		self._global.announcements[feature_id] = 0
+	local counts_down = true
 
-		return
-	end
+	if type(announcement) == "boolean" and announcement == true then
+		counts_down = false
+	else
+		if type(announcement) ~= "number" then
+			self._global.announcements[feature_id] = 0
 
-	if announcement <= 0 then
-		return
+			return
+		end
+
+		if announcement <= 0 then
+			return
+		end
 	end
 
 	local func = self[feature_id]
@@ -180,8 +190,11 @@ function FeatureManager:announce_feature(feature_id)
 		Application:error("[FeatureManager:announce_feature] Failed announcing feature!", feature_id)
 	end
 
-	announcement = announcement - 1
-	self._global.announcements[feature_id] = announcement
+	if counts_down then
+		announcement = announcement - 1
+		self._global.announcements[feature_id] = announcement
+	end
+
 	self._global.announced[feature_id] = true
 end
 

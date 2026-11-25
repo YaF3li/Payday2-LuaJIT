@@ -8,7 +8,7 @@ function SkirmishManager:init()
 end
 
 function SkirmishManager:init_finalize()
-	print("SkirmishManager:init_finalize")
+	print("[SkirmishManager:init_finalize]")
 
 	if not self:is_skirmish() then
 		return
@@ -173,16 +173,6 @@ function SkirmishManager:_has_players_in_custody()
 	end
 
 	return false
-end
-
-function SkirmishManager:check_gameover_conditions()
-	do return false end
-
-	if not self:is_skirmish() or not self._game_over_delay then
-		return false
-	end
-
-	return Application:time() > self._game_over_delay
 end
 
 function SkirmishManager:update()
@@ -431,8 +421,6 @@ function SkirmishManager:claimed_reward_by_id(id)
 end
 
 function SkirmishManager:get_wave_progress()
-	print("SkirmishManager:get_wave_progress", self:current_wave_number(), self._start_wave)
-
 	return self:current_wave_number()
 end
 

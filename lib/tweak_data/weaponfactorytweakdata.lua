@@ -43810,6 +43810,23 @@ function WeaponFactoryTweakData:_init_legendary()
 		},
 		perks = {
 			"gadget"
+		},
+		override = {
+			wpn_fps_upg_ns_shot_thick = {
+				parent = "barrel"
+			},
+			wpn_fps_upg_ns_shot_shark = {
+				parent = "barrel"
+			},
+			wpn_fps_upg_shot_ns_king = {
+				parent = "barrel"
+			},
+			wpn_fps_upg_ns_sho_salvo_large = {
+				parent = "barrel"
+			},
+			wpn_fps_upg_ns_duck = {
+				parent = "barrel"
+			}
 		}
 	}
 	self.parts.wpn_fps_pis_judge_g_legend = {

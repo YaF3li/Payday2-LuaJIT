@@ -271,6 +271,8 @@ function MenuCallbackHandler:return_to_crime_spree_lobby()
 end
 
 function MenuCallbackHandler:leave_crime_spree_lobby()
+	print("[MenuCallbackHandler] crime_spree leave lobby")
+
 	if game_state_machine:current_state_name() == "ingame_lobby_menu" then
 		self:end_game()
 

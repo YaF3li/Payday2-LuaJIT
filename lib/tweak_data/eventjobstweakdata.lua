@@ -659,6 +659,11 @@ function EventJobsTweakData:_init_cg22_challenges(tweak_data)
 				item_entry = "wpn_fps_upg_charm_teddymoo",
 				type_items = "weapon_mods"
 			}
+		},
+		job_art = {
+			padding = -48,
+			path = "guis/dlcs/sj2/job_art/job_art_crim_carol",
+			width = 256
 		}
 	})
 	table.insert(self.challenges, {

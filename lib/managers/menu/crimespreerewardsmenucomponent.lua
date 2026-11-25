@@ -48,9 +48,6 @@ function CrimeSpreeRewardsMenuComponent:_setup()
 		next_level_data = managers.experience:next_level_data(),
 		prestige_total = managers.experience:get_current_prestige_xp()
 	}
-
-	print(inspect(self._exp_data))
-
 	self._rewards_table = managers.crime_spree:calculate_rewards()
 
 	managers.crime_spree:on_spree_complete()
@@ -584,7 +581,7 @@ function CrimeSpreeRewardsMenuComponent:_add_item_textures(lootdrop_data, panel)
 			panel = panel,
 			is_pattern = category == "textures" and true or false
 		})
-		local texture_path
+		local texture_path, texture_color
 
 		if category == "textures" then
 			texture_path = tweak_data.blackmarket.textures[item_id].texture
@@ -592,6 +589,10 @@ function CrimeSpreeRewardsMenuComponent:_add_item_textures(lootdrop_data, panel)
 			texture_path = "guis/textures/pd2/blackmarket/cash_drop"
 		elseif category == "xp" then
 			texture_path = "guis/textures/pd2/blackmarket/xp_drop"
+		elseif category == "textures" then
+			texture_path = tweak_data.blackmarket.textures[item_id].texture
+		elseif category == "materials" then
+			texture_path, texture_color = managers.blackmarket:get_mask_materials_icon(item_id)
 		elseif category == "safes" then
 			local td = tweak_data.economy[category] and tweak_data.economy[category][item_id]
 
@@ -644,12 +645,12 @@ function CrimeSpreeRewardsMenuComponent:_add_item_textures(lootdrop_data, panel)
 			texture_path = guis_catalog .. "textures/pd2/blackmarket/icons/" .. tostring(category) .. "/" .. tostring(guis_id)
 		end
 
-		Application:debug("Requesting Texture", texture_path)
+		Application:debug("[CrimeSpreeRewardsMenuComponent] Requesting Texture", texture_path)
 
 		if DB:has(Idstring("texture"), texture_path) then
 			TextureCache:request(texture_path, "NORMAL", texture_loaded_clbk, 100)
 		else
-			Application:error("[HUDLootScreen]", "Texture not in DB", texture_path)
+			Application:error("[CrimeSpreeRewardsMenuComponent]", "Texture not in DB", texture_path)
 			panel:rect({
 				color = Color.red
 			})
@@ -674,12 +675,10 @@ function CrimeSpreeRewardsMenuComponent:_texture_loaded_clbk(params, texture_ids
 	TextureCache:unretrieve(texture_idstring)
 
 	if is_pattern then
-		local texture, rect, coords = tweak_data.hud_icons:get_icon_data("upcard_pattern")
-
-		item:set_image(texture)
-		item:set_texture_rect(unpack(rect))
-		item:set_w(math.round(0.7111111111111111 * panel:h()))
-		item:set_h(panel:h())
+		item:set_render_template(Idstring("VertexColorTexturedPatterns"))
+		item:set_blend_mode("normal")
+		item:set_w(card_size / 2)
+		item:set_h(card_size / 2)
 	end
 
 	local texture_width = item:texture_width()

@@ -1112,7 +1112,9 @@ function MoneyManager:on_sell_mask(mask_id, global_value, blueprint)
 end
 
 function MoneyManager:get_loot_drop_cash_value(value_id)
-	return self:get_tweak_value("money_manager", "loot_drop_cash", value_id) or 100
+	local money = tweak_data:get_value("money_manager", "loot_drop_cash", value_id) or 100
+
+	return money
 end
 
 function MoneyManager:on_loot_drop_cash(value_id)

@@ -294,10 +294,10 @@ function GageAssignmentTweakData:get_num_assignment_units()
 	local num_assignment_units = self.NUM_ASSIGNMENT_UNITS
 	local difficulty = managers.job:current_difficulty_stars() + 1
 
-	if difficulty < 1 or difficulty > #self.NUM_ASSIGNMENT_UNITS then
+	if difficulty < 1 or difficulty > #num_assignment_units then
 		debug_pause("GageAssignmentTweakData:get_num_assignment_units() difficulty out of bound", difficulty, inspect(self.NUM_ASSIGNMENT_UNITS))
 
-		difficulty = math.clamp(difficulty, 1, #self.NUM_ASSIGNMENT_UNITS)
+		difficulty = math.clamp(difficulty, 1, #num_assignment_units)
 	end
 
 	local level_id = managers.job:current_level_id()

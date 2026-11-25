@@ -1345,6 +1345,10 @@ function TextCompositeButton:init(parent, composite_button_config, panel_config,
 		text_id = composite_button_config.text_id
 	})
 
+	if not managers.menu:is_pc_controller() then
+		text_config.normal_color = tweak_data.screen_colors.text
+	end
+
 	self._text = TextButton:new(self, text_config)
 
 	if composite_button_config.text_align == "right" then
@@ -1355,6 +1359,7 @@ function TextCompositeButton:init(parent, composite_button_config, panel_config,
 
 	if not panel_config.h then
 		self:set_h(self._text:h())
+		self._rect:set_h(self._text:h())
 	end
 
 	self:register_child(self._text)

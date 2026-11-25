@@ -18,7 +18,11 @@ function VictoryState:at_enter(...)
 		local was_safehouse_raid = managers.job:current_job_id() == "chill_combat"
 
 		if was_safehouse_raid then
-			managers.custom_safehouse:add_coins(tweak_data.safehouse.rewards.raid, TelemetryConst.economy_origin.safehouse_raid_reward)
+			local difficulty_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)
+			local coins = tweak_data.safehouse.rewards.raid
+
+			print("[SAFEHOUSERAIDREWARD] VictoryState coins, difficulty_index", coins, difficulty_index)
+			managers.custom_safehouse:add_coins(coins, TelemetryConst.economy_origin.safehouse_raid_reward)
 
 			self._safehouse_raid_rewarded = true
 		end

@@ -1193,11 +1193,13 @@ function MenuSceneManager:setup_event_units()
 	local event_menu_scene = managers.perpetual_event:get_menu_scene()
 
 	if not event_menu_scene then
+		Application:debug("[MenuSceneManager:setup_event_units] No event menu scene from perpetual_event manager.")
+
 		return
 	end
 
 	if event_menu_scene.presents then
-		self:_setup_event_presents()
+		self:_setup_event_presents(event_menu_scene.presents_bonus)
 	end
 
 	if event_menu_scene.confetti then
@@ -1260,16 +1262,16 @@ function MenuSceneManager:setup_event_units()
 	end
 end
 
-function MenuSceneManager:_setup_event_presents()
+function MenuSceneManager:_setup_event_presents(bonus)
 	local positions = {
 		Vector3(100, 100, -75),
 		Vector3(100, 175, -75),
 		Vector3(25, 125, -75),
+		Vector3(-25, 75, -75),
 		Vector3(125, 125, -125),
 		Vector3(75, 200, -125),
 		Vector3(50, 100, -125),
 		Vector3(0, 150, -125),
-		Vector3(-25, 75, -75),
 		Vector3(0, 50, -125),
 		Vector3(-50, 100, -125)
 	}
@@ -1287,14 +1289,17 @@ function MenuSceneManager:_setup_event_presents()
 		Idstring("units/pd2_dlc_a10th/props/a10th_gifts/a10th_gifts_zigzag"),
 		Idstring("units/pd2_dlc_a10th/props/a10th_gifts/a10th_gifts_zigzag")
 	}
-	local rotation, unit_index
+
+	table.shuffle(unit_names)
+
+	local rotation, unit_index, unit_name, spawned_unit
 
 	for i, position in ipairs(positions) do
-		rotation = Rotation((math.random(2) - 1) * 25, 0, 0)
-		unit_index = math.random(#unit_names)
+		rotation = Rotation((math.random(2) - 1) * 20, 0, 0)
+		unit_name = unit_names[math.min(i, #unit_names)]
+		spawned_unit = World:spawn_unit(unit_name, position, rotation)
 
-		table.insert(self._event_units, World:spawn_unit(unit_names[unit_index], position, rotation))
-		table.remove(unit_names, unit_index)
+		table.insert(self._event_units, spawned_unit)
 	end
 end
 

@@ -414,7 +414,6 @@ function ContractBrokerHeistItem:is_stealthable()
 end
 
 function ContractBrokerHeistItem:is_holiday_event()
-	local is_xmas = false
 	local is_xmas = managers.perpetual_event:get_holiday_tactics() == "BTN_XMAS"
 
 	return is_xmas and managers.job:is_christmas_job(self._job_data.job_id)

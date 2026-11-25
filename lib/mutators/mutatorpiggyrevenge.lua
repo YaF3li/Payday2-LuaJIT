@@ -632,7 +632,12 @@ function MutatorPiggyRevenge:on_enemy_killed(dead_unit, attack_data)
 			next_spawn_t = 0.5,
 			spawned_amount = 0,
 			bag_spawn_amount = bag_spawn_amount,
-			pos = pos
+			pos = pos,
+			effect = World:effect_manager():spawn({
+				effect = Idstring("effects/payday2/environment/coin_falling"),
+				position = pos,
+				normal = math.UP
+			})
 		}
 
 		table.insert(self._boss_bag_fountains, new_fountain)

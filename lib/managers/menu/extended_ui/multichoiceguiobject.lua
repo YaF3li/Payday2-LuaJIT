@@ -47,6 +47,7 @@ function MultichoiceGuiObject:init(parent, params, panel_config)
 		local right_btn = params.use_change_profile_controls and "menu_change_profile_right" or "next_page"
 
 		placer:add_right(IconButton:new(self, {
+			rotation = 360,
 			size = 32,
 			texture = "guis/textures/menu_arrows",
 			binding = left_btn,
@@ -58,13 +59,13 @@ function MultichoiceGuiObject:init(parent, params, panel_config)
 				24,
 				24
 			}
-		}, callback(self, self, "_prev")), 20)
+		}, callback(self, self, "_prev")), 4)
 		placer:add_right(self:fine_text({
 			text = managers.localization:btn_macro(left_btn, true),
 			font = small_font,
-			font_size = small_font_size,
+			font_size = medium_font_size,
 			color = Color.white
-		}), 0)
+		}))
 		placer:add_right_center(self._text)
 		placer:add_right(self:fine_text({
 			text = managers.localization:btn_macro(right_btn, true),
@@ -85,7 +86,7 @@ function MultichoiceGuiObject:init(parent, params, panel_config)
 				24,
 				24
 			}
-		}, callback(self, self, "_next")), 0)
+		}, callback(self, self, "_next")), 4)
 	else
 		placer:add_right(IconButton:new(self, {
 			rotation = 360,

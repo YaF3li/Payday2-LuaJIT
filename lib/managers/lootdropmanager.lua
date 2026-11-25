@@ -128,7 +128,8 @@ function LootDropManager:droppable_items(item_pc, infamous_success, skip_types)
 				local pass_infamous = not is_infamous or infamous_success
 				local pass_dlc = true
 				local pass_qlvl = not got_qlvl or got_qlvl <= plvl
-				local pass_xp_card = type ~= "xp" or xp_no_next_lv > (tweak_data:get_value("experience_manager", "loot_drop_value", item_tweak.value_id) or 0)
+				local xp_amount = tweak_data:get_value("experience_manager", "loot_drop_value", item_tweak.value_id) or 0
+				local pass_xp_card = type ~= "xp" or xp_amount < xp_no_next_lv
 				local global_value = fixed_global_value or "normal"
 
 				if is_infamous then

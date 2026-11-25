@@ -1025,7 +1025,6 @@ function JobManager:is_level_christmas(level_id)
 end
 
 function JobManager:get_job_christmas_bonus(job_id)
-	local add_bonus = false
 	local add_bonus = managers.perpetual_event:get_holiday_tactics()
 
 	if add_bonus and self:is_christmas_job(job_id) then

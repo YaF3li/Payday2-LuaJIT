@@ -25,8 +25,19 @@ function SkinEditor:init_items()
 	self._global.skins = {}
 	self._current_skin = 1
 
-	for _, item in ipairs(managers.workshop:items()) do
+	local workshop_items = managers.workshop:items()
+
+	Application:debug("[SkinEditor:init_items] No. workshop items:", #workshop_items)
+
+	for idx, item in ipairs(workshop_items) do
+		Application:debug("[SkinEditor:init_items]", idx, inspect(item))
+
 		if item:config().name and item:config().data and item:config().data.weapon_id then
+			if not self:has_texture_folders(item) then
+				Application:debug("[SkinEditor:select_skin] Skin folders were invalid or outdated, setting them up again!", item:config().name)
+				self:setup_texture_folders(item)
+			end
+
 			self:add_literal_paths(item)
 			self:_append_skin(item:config().data.weapon_id, item)
 			self:load_textures(item)
@@ -59,6 +70,8 @@ function SkinEditor:delete_current()
 	local skin = self:get_current_skin()
 
 	if not skin then
+		Application:warn("[SkinEditor:delete_current] Cannot delete, current skin does not exist.")
+
 		return
 	end
 
@@ -82,6 +95,11 @@ function SkinEditor:select_skin(local_skin_id)
 		managers.menu:active_menu().logic:get_node("skin_editor")
 
 		return
+	end
+
+	if not self:has_texture_folders(skin) then
+		Application:debug("[SkinEditor:select_skin] Skin folders were invalid or outdated, setting them up again!", local_skin_id)
+		self:setup_texture_folders(skin)
 	end
 
 	if not skin:config().data then
@@ -210,10 +228,13 @@ function SkinEditor:publish_skin(skin, title, desc, changelog, callb)
 	self:save_skin(skin)
 
 	local staging = managers.workshop:create_staging_directory()
+	local staging_nice = Application:nice_path(staging, true)
 
 	for _, type in ipairs(self:get_texture_types()) do
-		if not SystemFS:exists(Application:nice_path(staging, true) .. type) then
-			SystemFS:make_dir(Application:nice_path(staging, true) .. type)
+		local staging_nice_type = staging_nice .. type
+
+		if not SystemFS:exists(staging_nice_type) then
+			SystemFS:make_dir(staging_nice_type)
 		end
 	end
 
@@ -397,11 +418,14 @@ function SkinEditor:skin_count(weapon_id)
 end
 
 function SkinEditor:get_skin(local_skin_id)
-	if not self._global.skins[self._current_weapon_id] then
-		self._global.skins[self._current_weapon_id] = {}
+	local current_weapon_skin = self._global.skins[self._current_weapon_id]
+
+	if not current_weapon_skin then
+		current_weapon_skin = {}
+		self._global.skins[self._current_weapon_id] = current_weapon_skin
 	end
 
-	return self._global.skins[self._current_weapon_id][local_skin_id]
+	return current_weapon_skin[local_skin_id]
 end
 
 function SkinEditor:get_current_skin()
@@ -472,7 +496,7 @@ end
 
 function SkinEditor:get_texture_list_by_type(skin, tex_type)
 	if not tex_type or not self:has_texture_folders(skin) then
-		Application:error("[SkinEditor:get_texture_list_by_type] called without a type")
+		Application:error("[SkinEditor:get_texture_list_by_type] called without a skin or type", skin and skin:path(), tex_type)
 
 		return self:get_texture_list(skin)
 	end
@@ -482,6 +506,7 @@ end
 
 function SkinEditor:load_textures(skin, path_or_tex_type)
 	if not path_or_tex_type and self:has_texture_folders(skin) then
+		Application:error("[SkinEditor:load_textures] called without a skin or path_or_tex_type", skin, path_or_tex_type)
 		self:_load_textures_by_types(skin)
 
 		return
@@ -750,6 +775,8 @@ function SkinEditor:add_literal_paths(skin)
 				table.insert(to_process, data[k])
 			end
 		end
+
+		Application:debug("[SkinEditor:add_literal_paths]", inspect(data))
 	end
 end
 
@@ -768,10 +795,14 @@ function SkinEditor:setup_texture_folders(skin)
 	for _, texture_type in ipairs(texture_types) do
 		local tex_path = self:get_texture_path_by_type(skin, texture_type)
 
-		if not SystemFS:exists(tex_path) and not SystemFS:make_dir(tex_path) then
-			Application:error("Failed to create dir:", tex_path)
+		if not SystemFS:exists(tex_path) then
+			Application:warn("[SkinEditor:setup_texture_folders] Failed to find dir:", tex_path)
 
-			return
+			if not SystemFS:make_dir(tex_path) then
+				Application:error("[SkinEditor:setup_texture_folders] Failed to create dir:", tex_path)
+
+				return
+			end
 		end
 	end
 end
@@ -784,6 +815,8 @@ function SkinEditor:has_texture_folders(skin)
 		local tex_path = self:get_texture_path_by_type(skin, texture_type)
 
 		if not SystemFS:exists(tex_path) or not SystemFS:is_dir(tex_path) then
+			Application:error("[SkinEditor:has_texture_folders] does not exist for tex_path", tex_path)
+
 			has_folders = false
 
 			break

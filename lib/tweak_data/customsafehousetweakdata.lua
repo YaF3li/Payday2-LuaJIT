@@ -260,7 +260,7 @@ function CustomSafehouseTweakData:_init_safehouse_contractors(tweak_data)
 		character = "jowi",
 		image_name = "john",
 		name_id = "menu_jowi",
-		weighting = heister_weighting,
+		weighting = 0,
 		dailies = {
 			"daily_akimbo",
 			"daily_professional"
@@ -331,7 +331,7 @@ function CustomSafehouseTweakData:_init_safehouse_contractors(tweak_data)
 		character = "bodhi",
 		image_name = "bodhi",
 		name_id = "menu_bodhi",
-		weighting = heister_weighting,
+		weighting = 0,
 		dailies = {
 			"daily_cake",
 			"daily_my_bodhi_is_ready"
@@ -341,7 +341,7 @@ function CustomSafehouseTweakData:_init_safehouse_contractors(tweak_data)
 		character = "jimmy",
 		image_name = "jimmy",
 		name_id = "menu_jimmy",
-		weighting = heister_weighting,
+		weighting = 0,
 		dailies = {
 			"daily_tasty",
 			"daily_candy"

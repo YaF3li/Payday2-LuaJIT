@@ -778,9 +778,10 @@ function CriminalsManager.character_mesh_destroy_clbk(character_unit)
 	local unit = CriminalsManager.chk_camera_unit(character_unit)
 	local spawn_manager_ext = unit:spawn_manager()
 	local char_mesh = spawn_manager_ext and spawn_manager_ext:get_unit("char_mesh")
+	local char_mesh_damage_ext = alive(char_mesh) and char_mesh:damage()
 
-	if alive(char_mesh) then
-		char_mesh:damage():run_sequence("on_destroyed")
+	if char_mesh_damage_ext then
+		char_mesh_damage_ext:run_sequence("on_destroyed")
 	end
 end
 

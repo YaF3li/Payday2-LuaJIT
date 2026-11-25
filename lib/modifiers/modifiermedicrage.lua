@@ -9,7 +9,7 @@ function ModifierMedicRage:init(...)
 	self._is_server = Network:is_server()
 end
 
-function ModifierMedicRage:OnEnemyDied(target)
+function ModifierMedicRage:OnEnemyDied(unit)
 	if not self._is_server then
 		return
 	end

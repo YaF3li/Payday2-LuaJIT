@@ -39,6 +39,7 @@ function PerpetualEventManager:_setup_events()
 	events.anniversary = {}
 	events.anniversary.has_gamemode_event = true
 	events.anniversary.mutator_name = "MutatorPiggyRevenge"
+	events.anniversary.event_levels = table.map_keys(tweak_data.mutators.piggyrevenge.level_coordinates)
 	events.anniversary.xp_bonuses = {
 		bonus_piggyrevenge = {
 			color = tweak_data.screen_colors.event_color,
@@ -119,6 +120,7 @@ function PerpetualEventManager:_setup_events()
 	events.xmas_gifts.menu_scene = {
 		money_effect = false,
 		presents = true,
+		presents_bonus = true,
 		xmas_tree = true
 	}
 	events.xmas_gifts.packages = {
@@ -175,6 +177,10 @@ function PerpetualEventManager:get_active_event()
 	return self._global.events[self._global.active_event] or false
 end
 
+function PerpetualEventManager:get_active_event_id()
+	return self._global.active_event or nil
+end
+
 function PerpetualEventManager:_is_date_in_range(target_month, target_day, start_month, start_day, stop_month, stop_day)
 	if start_month < stop_month or start_month == stop_month and start_day <= stop_day then
 		return (start_month < target_month or target_month == start_month and start_day <= target_day) and (target_month < stop_month or target_month == stop_month and target_day <= stop_day)
@@ -185,6 +191,8 @@ end
 
 function PerpetualEventManager:fetch_event()
 	if self._global.event_fetched then
+		Application:warn("[PerpetualEventManager:fetch_event] Events not yet fetched!")
+
 		return
 	end
 

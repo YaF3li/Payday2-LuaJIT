@@ -146,6 +146,8 @@ function GameStateMachine:can_change_state_by_name(state_name)
 end
 
 function GameStateMachine:change_state_by_name(state_name, params)
+	print("[GameStateMachine] change_state_by_name to", state_name)
+
 	local name = self:gamemode():get_state(state_name)
 	local state = assert(self._states[name], "[GameStateMachine] Name '" .. tostring(name) .. "' does not correspond to a valid state.")
 

@@ -1,6 +1,5 @@
 local IDS_TEXT = Idstring("Text")
 local IDS_TIMER_GUI = Idstring("timer_gui")
-local IDS_TIMER_GUI_GUI = Idstring("guis/timer_gui")
 
 TimerGui = TimerGui or class()
 TimerGui.themes = {}
@@ -170,6 +169,7 @@ function TimerGui:init(unit)
 		self._show_seconds_text = ""
 	end
 
+	self._ids_timer_gui = Idstring(self._timer_gui or "guis/timer_gui")
 	self._gui_start = self._gui_start or "prop_timer_gui_start"
 	self._gui_working = self._gui_working or "prop_timer_gui_working"
 	self._gui_malfunction = self._gui_malfunction or "prop_timer_gui_malfunction"
@@ -226,7 +226,7 @@ end
 
 function TimerGui:add_workspace(gui_object)
 	self._ws = self._new_gui:create_object_workspace(0, 0, gui_object, Vector3(0, 0, 0))
-	self._gui = self._ws:panel():gui(IDS_TIMER_GUI_GUI)
+	self._gui = self._ws:panel():gui(self._ids_timer_gui)
 	self._gui_script = self._gui:script()
 end
 

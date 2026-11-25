@@ -2421,7 +2421,6 @@ function PlayerManager:get_limited_exp_multiplier(job_id, level_id)
 	local job_data = tweak_data.narrative:job_data(job_id) or {}
 	local level_data = level_id and tweak_data.levels[level_id] or {}
 	local multiplier = tweak_data:get_value("experience_manager", "limited_bonus_multiplier") or 1
-	local add_xmas_bonus = false
 	local add_xmas_bonus = managers.perpetual_event:get_holiday_tactics() == "BTN_XMAS"
 
 	if add_xmas_bonus and level_data.is_christmas_heist then
